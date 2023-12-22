@@ -2,5 +2,5 @@
 
 We can check news categorywise...!!!
 
-## UI for News Application
+## UI for News Application using flutter
 
