@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/models/article_model.dart';
-import 'package:news_app/screens/home_screen.dart';
 import 'package:news_app/widgets/bottom_nav_bar.dart';
 
 import 'article_screen.dart';
@@ -36,13 +35,24 @@ class DiscoverScreen extends StatelessWidget {
   }
 }
 
-class _CategoryNews extends StatelessWidget {
+class _CategoryNews extends StatefulWidget {
   const _CategoryNews({
     super.key,
     required this.tabs,
   });
 
   final List<String> tabs;
+
+  @override
+  State<_CategoryNews> createState() => _CategoryNewsState();
+}
+
+class _CategoryNewsState extends State<_CategoryNews> {
+  int currentTabIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +62,7 @@ class _CategoryNews extends StatelessWidget {
         TabBar(
           isScrollable: true,
           indicatorColor: Colors.black,
-          tabs: tabs
+          tabs: widget.tabs
               .map(
                 (tab) => Tab(
                   icon: Text(tab,
@@ -63,81 +73,90 @@ class _CategoryNews extends StatelessWidget {
                 ),
               )
               .toList(),
+          //these 2 lines were added to see the categorywise
+          onTap: (value) => setState(() {
+            currentTabIndex = value;
+          }),
         ),
         SizedBox(
             height: MediaQuery.of(context).size.height,
             child: TabBarView(
-                children: tabs
+                children: widget.tabs
                     .map(
                       (tab) => ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.vertical,
                         itemCount: articles.length,
                         itemBuilder: ((context, index) {
-                          return InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                ArticleScreen.routeName,
-                                arguments: articles[index],
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  //margin: const EdgeInsets.all(20.0),
-                                  //borderRadius: 5,
-                                  child: Image(
-                                    width: 100,
-                                    height: 80,
-                                    image: AssetImage(articles[index].imageUrl),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                          //categorywise articles
+                          return articles[index].category ==
+                                  widget.tabs[currentTabIndex]
+                              ? InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      ArticleScreen.routeName,
+                                      arguments: articles[index],
+                                    );
+                                  },
+                                  child: Row(
                                     children: [
-                                      Text(articles[index].title,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.clip,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .copyWith(
-                                                  fontWeight: FontWeight.bold)),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.schedule,
-                                            size: 18,
-                                          ),
-                                          Text(
-                                            '${DateTime.now().difference(articles[index].createdAt).inHours} hours ago    ',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!,
-                                          ),
-                                          const Icon(
-                                            Icons.visibility,
-                                            size: 18,
-                                          ),
-                                          Text(
-                                            '${articles[index].views} views',
-                                            style:
-                                                const TextStyle(fontSize: 12),
-                                          ),
-                                        ],
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Image(
+                                          width: 100,
+                                          height: 80,
+                                          image: AssetImage(
+                                              articles[index].imageUrl),
+                                        ),
                                       ),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(articles[index].title,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.clip,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                            const SizedBox(height: 10),
+                                            Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.schedule,
+                                                  size: 18,
+                                                ),
+                                                Text(
+                                                  '${DateTime.now().difference(articles[index].createdAt).inHours} hours ago    ',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!,
+                                                ),
+                                                const Icon(
+                                                  Icons.visibility,
+                                                  size: 18,
+                                                ),
+                                                Text(
+                                                  '${articles[index].views} views',
+                                                  style: const TextStyle(
+                                                      fontSize: 12),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      )
                                     ],
                                   ),
                                 )
-                              ],
-                            ),
-                          );
+                              : const SizedBox();
                         }),
                       ),
                     )
