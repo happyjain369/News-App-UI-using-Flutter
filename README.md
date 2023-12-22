@@ -1,8 +1,8 @@
-# chat_app
+# News_Updates 
 
 A new Flutter project.
 
-## Getting Started
+## UI for News Application
 
 This project is a starting point for a Flutter application.
 
